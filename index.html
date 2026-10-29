@@ -1,0 +1,383 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090d1b">
+<meta name="description" content="Aditya Verse Campus OS - Your personal student workspace.">
+<title>Aditya Verse Campus OS</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<style>
+:root{color-scheme:dark;--bg:#090d1b;--panel:#11182a;--panel2:#17213a;--text:#f2f5ff;--muted:#9aa8c5;--accent:#8b7bff;--line:#27314b}
+*{box-sizing:border-box}
+body{margin:0;background:radial-gradient(ellipse at top,#182348 0,var(--bg) 55%);color:var(--text);font:15px system-ui,Arial;min-height:100vh}
+button,input,textarea,select{font:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:18px 5%;border-bottom:1px solid var(--line);gap:12px}
+.brand{font-weight:850;font-size:19px;letter-spacing:-.5px}.brand span{color:var(--accent)}
+.muted{color:var(--muted);font-size:13px}
+.pill,.btn{border:1px solid var(--line);border-radius:12px;padding:10px 14px;background:var(--panel2);color:var(--text)}
+.btn.primary{background:var(--accent);color:#fff;border-color:transparent;font-weight:750}
+.btn:hover,.app:hover{filter:brightness(1.16);transform:translateY(-2px)}
+.wrap{max-width:1180px;margin:auto;padding:26px 5% 60px}
+.hero{display:flex;justify-content:space-between;align-items:center;gap:20px;margin:10px 0 26px}
+h1{font-size:clamp(27px,4vw,42px);margin:5px 0;letter-spacing:-1.3px}
+h2{font-size:19px;margin:0 0 15px}
+h3{font-size:16px;margin:0 0 10px}
+.grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px}
+.card,.app{background:linear-gradient(145deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:20px;padding:19px;min-width:0}
+.stat strong{font-size:28px;display:block;margin-top:9px}
+.apps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.app{text-align:left;color:var(--text);cursor:pointer;transition:.18s;min-height:112px}
+.emoji{font-size:28px;display:block;margin-bottom:13px}
+.app b{display:block;font-size:14px}
+.section{margin-top:25px}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+input,textarea,select{width:100%;background:#090f20;color:var(--text);border:1px solid var(--line);padding:12px;border-radius:11px;margin:5px 0 12px}
+textarea{resize:vertical;min-height:125px}
+.row{display:flex;gap:9px;align-items:center;flex-wrap:wrap}
+.row>*{flex:1}
+.list{display:grid;gap:9px}
+.item{padding:12px;border:1px solid var(--line);border-radius:12px;display:flex;gap:10px;align-items:center;justify-content:space-between}
+.item span{overflow-wrap:anywhere}
+.item button{flex-shrink:0}
+#screen{position:fixed;inset:0;background:#080b17f5;z-index:5;display:none;align-items:center;justify-content:center;padding:20px;overflow:auto}
+.modal{width:min(560px,100%);background:var(--panel);border:1px solid var(--line);border-radius:22px;padding:24px}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:var(--panel2);border:1px solid var(--line);padding:12px 18px;border-radius:14px;display:none;z-index:9;max-width:90%;text-align:center}
+.foot{text-align:center;color:var(--muted);font-size:12px;margin-top:35px}
+.hide{display:none!important}
+body.light{color-scheme:light;--bg:#eef2ff;--panel:#fff;--panel2:#f8f9ff;--text:#171c31;--muted:#596580;--line:#d6dced;background:var(--bg)}
+body.light input,body.light textarea,body.light select{background:#fff;color:#171c31}
+@media(max-width:760px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}.apps{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.hero{align-items:flex-start;flex-direction:column}.top{padding:15px 5%}.wrap{padding-top:20px}}
+@media(max-width:360px){.card,.app{padding:13px}.brand{font-size:16px}}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">✦ Aditya Verse <span>Campus OS</span></div>
+  <div class="row" style="flex:0 0 auto">
+    <button class="pill" id="themeBtn">☀️ Theme</button>
+    <button class="pill" id="loginBtn">🔐 Login</button>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <div>
+      <div class="muted" id="date">YOUR PERSONAL WORKSPACE</div>
+      <h1>Hey, <span id="greetingName">Explorer</span> 👋</h1>
+      <div class="muted">Think better. Learn smarter. Build your future.</div>
+    </div>
+    <div class="card" style="min-width:150px">
+      <div class="muted">LOCAL TIME</div>
+      <div id="clock" style="font-size:30px;font-weight:800">--:--</div>
+      <div class="muted" id="authStatus">Guest workspace</div>
+    </div>
+  </section>
+
+  <section class="grid">
+    <div class="card stat"><span class="muted">Tasks left</span><strong id="taskCount">0</strong><span class="muted">Keep moving 🚀</span></div>
+    <div class="card stat"><span class="muted">Saved notes</span><strong id="noteCount">0</strong><span class="muted">Your ideas matter</span></div>
+    <div class="card stat"><span class="muted">Focus sessions</span><strong id="focusCount">0</strong><span class="muted">One step at a time</span></div>
+    <div class="card stat"><span class="muted">Workspace</span><strong style="font-size:20px">Ready</strong><span class="muted" id="network">Checking connection…</span></div>
+  </section>
+
+  <section class="section">
+    <h2>🚀 App Launcher</h2>
+    <div class="apps">
+      <button class="app" data-app="notes"><span class="emoji">📝</span><b>Smart Notes</b><span class="muted">Save your ideas</span></button>
+      <button class="app" data-app="tasks"><span class="emoji">✅</span><b>Task Manager</b><span class="muted">Plan your day</span></button>
+      <button class="app" data-app="timetable"><span class="emoji">📅</span><b>Timetable</b><span class="muted">Your schedule</span></button>
+      <button class="app" data-app="calculator"><span class="emoji">🧮</span><b>Calculator</b><span class="muted">Quick calculations</span></button>
+      <button class="app" data-app="focus"><span class="emoji">🎯</span><b>Focus Room</b><span class="muted">25-minute timer</span></button>
+      <button class="app" data-app="profile"><span class="emoji">👤</span><b>My Profile</b><span class="muted">Personal workspace</span></button>
+      <button class="app" data-app="settings"><span class="emoji">⚙️</span><b>Settings</b><span class="muted">Personalize OS</span></button>
+      <button class="app" data-app="about"><span class="emoji">✨</span><b>About Campus OS</b><span class="muted">Made for students</span></button>
+    </div>
+  </section>
+
+  <section class="section two">
+    <div class="card">
+      <h2>⚡ Quick Tasks</h2>
+      <form id="taskForm">
+        <input id="taskInput" maxlength="160" placeholder="What do you need to do?" required>
+        <button class="btn primary" type="submit">+ Add task</button>
+      </form>
+      <div class="list" id="taskList"></div>
+    </div>
+    <div class="card">
+      <h2>💡 Quick Note</h2>
+      <textarea id="quickNote" maxlength="5000" placeholder="Write an idea, reminder or revision point..."></textarea>
+      <button class="btn primary" id="saveQuick">Save note</button>
+      <button class="btn" id="openNotes">All notes</button>
+      <p class="muted">Notes are stored on this device/browser.</p>
+    </div>
+  </section>
+
+  <div class="foot">Aditya Verse Campus OS v1.0 · Built for learning · Installable PWA</div>
+</main>
+
+<div id="screen" role="dialog" aria-modal="true" aria-label="Campus OS app">
+  <div class="modal">
+    <div class="row">
+      <h2 id="modalTitle">App</h2>
+      <button class="btn" id="closeModal" style="flex:0 0 auto">✕ Close</button>
+    </div>
+    <div id="modalBody"></div>
+  </div>
+</div>
+<div id="toast" role="status"></div>
+
+<!-- Firebase Authentication SDK. Login requires an internet connection. -->
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.14.1/firebase-auth-compat.js"></script>
+<script>
+"use strict";
+
+/* Replace these example values with your Firebase Web App config. */
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAS6rhP0_pRNfnakNJvzOQG35KAuA8m3GA",
+  authDomain: "aditya-verse-os.firebaseapp.com",
+  projectId: "aditya-verse-os",
+  appId: "1:672132353546:web:48300d27e79a53cb5099f3"
+};
+
+
+const $ = id => document.getElementById(id);
+const escapeHTML = s => String(s).replace(/[&<>"']/g, c => ({
+  "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+let user = null, auth = null, timerId = null, remaining = 1500;
+let focusSessions = Number(localStorage.getItem("avo_focus") || 0);
+let data = loadData();
+
+function loadData(){
+  try {
+    return JSON.parse(localStorage.getItem("avo_data") || '{"tasks":[],"notes":[],"timetable":[]}');
+  } catch {
+    return {tasks:[],notes:[],timetable:[]};
+  }
+}
+function saveData(){
+  localStorage.setItem("avo_data",JSON.stringify(data));
+  render();
+}
+function toast(msg){
+  $("toast").textContent=msg;
+  $("toast").style.display="block";
+  clearTimeout(toast.timeout);
+  toast.timeout=setTimeout(()=>$("toast").style.display="none",2400);
+}
+function render(){
+  $("taskCount").textContent=data.tasks.filter(t=>!t.done).length;
+  $("noteCount").textContent=data.notes.length;
+  $("focusCount").textContent=focusSessions;
+  $("taskList").innerHTML=data.tasks.length ? data.tasks.map((t,i)=>`
+    <div class="item">
+      <span style="${t.done?'text-decoration:line-through;opacity:.6':''}">
+        <input aria-label="Mark task complete" type="checkbox" ${t.done?'checked':''} onchange="toggleTask(${i},this.checked)" style="width:auto;margin:0 8px 0 0">
+        ${escapeHTML(t.text)}
+      </span>
+      <button class="btn" onclick="deleteTask(${i})" aria-label="Delete task">🗑️</button>
+    </div>`).join("") : '<p class="muted">No tasks yet. Add your first task!</p>';
+  $("quickNote").value=localStorage.getItem("avo_quick")||"";
+}
+window.toggleTask=(i,v)=>{data.tasks[i].done=v;saveData()};
+window.deleteTask=i=>{data.tasks.splice(i,1);saveData()};
+$("taskForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  const v=$("taskInput").value.trim(); if(!v)return;
+  data.tasks.unshift({text:v,done:false});
+  $("taskInput").value="";saveData();toast("Task added!");
+});
+$("saveQuick").onclick=()=>{
+  localStorage.setItem("avo_quick",$("quickNote").value);
+  toast("Quick note saved on this device!");
+};
+$("openNotes").onclick=()=>openApp("notes");
+$("themeBtn").onclick=()=>{
+  document.body.classList.toggle("light");
+  localStorage.setItem("avo_theme",document.body.classList.contains("light")?"light":"dark");
+};
+if(localStorage.getItem("avo_theme")==="light")document.body.classList.add("light");
+
+function updateClock(){
+  const now=new Date();
+  $("clock").textContent=now.toLocaleTimeString([],{hour:"2-digit",minute:"2-digit",second:"2-digit"});
+  $("date").textContent=now.toLocaleDateString([],{weekday:"long",year:"numeric",month:"long",day:"numeric"});
+}
+updateClock();setInterval(updateClock,1000);
+function updateNetwork(){
+  $("network").textContent=navigator.onLine?"Online connection":"Offline mode";
+}
+window.addEventListener("online",updateNetwork);
+window.addEventListener("offline",updateNetwork);updateNetwork();
+
+function openModal(title,html){
+  $("modalTitle").textContent=title;
+  $("modalBody").innerHTML=html;
+  $("screen").style.display="flex";
+}
+function closeModal(){
+  $("screen").style.display="none";
+}
+$("closeModal").onclick=closeModal;
+$("screen").addEventListener("click",e=>{if(e.target===$("screen"))closeModal()});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal()});
+document.querySelectorAll("[data-app]").forEach(b=>b.onclick=()=>openApp(b.dataset.app));
+
+function openApp(app){
+  if(app==="notes"){
+    openModal("📝 Smart Notes",`
+      <form id="noteForm">
+        <label for="noteTitle">Note title</label>
+        <input id="noteTitle" maxlength="100" placeholder="e.g. Science revision" required>
+        <label for="noteText">Note content</label>
+        <textarea id="noteText" maxlength="10000" placeholder="Write your notes..." required></textarea>
+        <button class="btn primary">Save note</button>
+      </form><div class="list" id="notesList"></div>`);
+    const draw=()=>{$("notesList").innerHTML=data.notes.length?data.notes.map((n,i)=>`
+      <div class="item"><span><b>${escapeHTML(n.title)}</b><br><span class="muted">${escapeHTML(n.text)}</span></span>
+      <button class="btn" onclick="removeNote(${i})">🗑️</button></div>`).join(""):'<p class="muted">No saved notes.</p>'};
+    $("noteForm").onsubmit=e=>{
+      e.preventDefault();data.notes.unshift({title:$("noteTitle").value.trim(),text:$("noteText").value.trim()});
+      saveData();draw();$("noteForm").reset();toast("Note saved!");
+    };
+    window.removeNote=i=>{data.notes.splice(i,1);saveData();draw()};
+    draw();
+  } else if(app==="tasks"){
+    openModal("✅ Task Manager",'<p>Use the Quick Tasks panel on the home screen to add, complete or delete tasks.</p><button class="btn primary" onclick="closeModal();document.getElementById(\'taskInput\').focus()">Add a task</button>');
+  } else if(app==="timetable"){
+    openModal("📅 My Timetable",`
+      <form id="timeForm">
+        <label for="day">Day</label><select id="day"><option>Monday</option><option>Tuesday</option><option>Wednesday</option><option>Thursday</option><option>Friday</option><option>Saturday</option><option>Sunday</option></select>
+        <label for="subject">Subject / Activity</label><input id="subject" maxlength="100" required placeholder="e.g. Mathematics">
+        <label for="period">Time</label><input id="period" maxlength="60" placeholder="e.g. 8:00 AM - 8:45 AM">
+        <button class="btn primary">Add schedule</button>
+      </form><div class="list" id="timeList"></div>`);
+    const draw=()=>{$("timeList").innerHTML=data.timetable.length?data.timetable.map((t,i)=>`<div class="item"><span><b>${escapeHTML(t.day)} · ${escapeHTML(t.subject)}</b><br><span class="muted">${escapeHTML(t.period||"Time not set")}</span></span><button class="btn" onclick="removePeriod(${i})">🗑️</button></div>`).join(""):'<p class="muted">Add your first class.</p>'};
+    $("timeForm").onsubmit=e=>{e.preventDefault();data.timetable.push({day:$("day").value,subject:$("subject").value.trim(),period:$("period").value.trim()});saveData();draw();$("timeForm").reset();toast("Schedule saved!")};
+    window.removePeriod=i=>{data.timetable.splice(i,1);saveData();draw()};
+    draw();
+  } else if(app==="calculator"){
+    openModal("🧮 Calculator",`
+      <input id="calcDisplay" readonly aria-label="Calculator display" placeholder="0" style="font-size:25px;text-align:right">
+      <div class="grid" style="grid-template-columns:repeat(4,minmax(0,1fr));gap:8px">
+      ${["7","8","9","÷","4","5","6","×","1","2","3","−","C","0",".","+","(",")","⌫","="].map(k=>`<button class="btn" onclick="calcKey('${k}')">${k}</button>`).join("")}</div>`);
+  } else if(app==="focus"){
+    openModal("🎯 Focus Room",`<p class="muted">Focus for 25 minutes. Keep distractions away.</p><div id="timer" style="font-size:56px;font-weight:850;text-align:center;margin:25px 0">25:00</div><div class="row"><button class="btn primary" id="startFocus">Start</button><button class="btn" id="pauseFocus">Pause</button><button class="btn" id="resetFocus">Reset</button></div>`);
+    $("startFocus").onclick=()=>{
+      if(timerId)return;
+      timerId=setInterval(()=>{
+        remaining--; $("timer").textContent=String(Math.floor(remaining/60)).padStart(2,"0")+":"+String(remaining%60).padStart(2,"0");
+        if(remaining<=0){clearInterval(timerId);timerId=null;focusSessions++;localStorage.setItem("avo_focus",focusSessions);render();toast("Focus session complete! Great work.");}
+      },1000);
+    };
+    $("pauseFocus").onclick=()=>{clearInterval(timerId);timerId=null};
+    $("resetFocus").onclick=()=>{clearInterval(timerId);timerId=null;remaining=1500;$("timer").textContent="25:00"};
+  } else if(app==="profile"){
+    openModal("👤 My Profile",`
+      <label for="profileName">Display name</label><input id="profileName" maxlength="50" value="${escapeHTML(localStorage.getItem("avo_name")||"Explorer")}">
+      <button class="btn primary" id="saveProfile">Save profile</button>
+      <p class="muted">Signed in as: ${escapeHTML(user?.email||"Guest / offline user")}</p>
+      <p class="muted">This profile name is stored locally on this device.</p>`);
+    $("saveProfile").onclick=()=>{const n=$("profileName").value.trim()||"Explorer";localStorage.setItem("avo_name",n);$("greetingName").textContent=n;toast("Profile saved!");};
+  } else if(app==="settings"){
+    openModal("⚙️ Settings",`
+      <p>Choose your appearance.</p><button class="btn primary" onclick="document.getElementById('themeBtn').click()">Toggle light / dark theme</button>
+      <hr style="border-color:var(--line);margin:20px 0">
+      <p>Export your local tasks, notes and timetable as a backup.</p>
+      <button class="btn primary" onclick="exportBackup()">Export backup JSON</button>
+      <p class="muted">Backup contains personal data. Keep it private.</p>
+      <button class="btn" onclick="clearWorkspace()">Clear local workspace</button>`);
+  } else if(app==="about"){
+    openModal("✨ About Campus OS",`
+      <h3>Aditya Verse Campus OS v1.0</h3>
+      <p>A student-focused personal workspace, designed for mobile and desktop.</p>
+      <p>Includes notes, tasks, timetable, calculator, focus timer and installable PWA support.</p>
+      <p class="muted">Created by Aditya Kumar Jha.</p>
+      <p class="muted">Personal data is stored in this browser. Firebase handles authentication only.</p>`);
+  }
+}
+window.calcKey=k=>{
+  const d=$("calcDisplay");if(!d)return;
+  if(k==="C"){d.value="";return}
+  if(k==="⌫"){d.value=d.value.slice(0,-1);return}
+  if(k==="="){
+    try{
+      if(!d.value||!/^[0-9+\-*/().\s]+$/.test(d.value))throw Error();
+      const result=Function('"use strict";return ('+d.value+')')();
+      if(!Number.isFinite(result))throw Error();
+      d.value=String(result);
+    }catch{d.value="Error"}
+    return;
+  }
+  d.value+=({"÷":"/","×":"*","−":"-"}[k]||k);
+};
+window.exportBackup=()=>{
+  const blob=new Blob([JSON.stringify({data,quickNote:localStorage.getItem("avo_quick")||"",focusSessions},null,2)],{type:"application/json"});
+  const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="campus-os-backup.json";a.click();URL.revokeObjectURL(a.href);
+};
+window.clearWorkspace=()=>{
+  if(!confirm("Clear all Campus OS tasks, notes, timetable and quick note from this browser? This cannot be undone."))return;
+  data={tasks:[],notes:[],timetable:[]};localStorage.removeItem("avo_data");localStorage.removeItem("avo_quick");saveData();closeModal();toast("Local workspace cleared.");
+};
+
+/* Firebase login: create account, sign in, or continue as guest. */
+function showLogin(){
+  openModal("🔐 Firebase Login",`
+    <p class="muted">Login requires internet. Guest mode works with local storage.</p>
+    <form id="authForm">
+      <label for="email">Email address</label><input id="email" type="email" autocomplete="email" required placeholder="you@example.com">
+      <label for="password">Password</label><input id="password" type="password" minlength="6" autocomplete="current-password" required placeholder="At least 6 characters">
+      <button class="btn primary" style="width:100%;margin-bottom:9px" type="submit">Sign in</button>
+      <button class="btn" style="width:100%" type="button" id="createAccount">Create new account</button>
+    </form>
+    <button class="btn" id="guestBtn" style="width:100%;margin-top:12px">Continue as guest / offline</button>
+    <p class="muted" id="authMessage" role="status"></p>`);
+  $("guestBtn").onclick=()=>{closeModal();toast("Guest workspace ready.")};
+  const configReady=firebaseConfig.apiKey!=="PASTE_YOUR_API_KEY"&&firebaseConfig.projectId!=="PASTE_YOUR_PROJECT_ID"&&firebaseConfig.appId!=="PASTE_YOUR_APP_ID";
+  const doAuth=async create=>{
+    const message=$("authMessage");
+    if(!navigator.onLine){message.textContent="You're offline. Login needs internet; use Guest mode.";return}
+    if(!configReady||!window.firebase){message.textContent="Firebase config missing or SDK unavailable. Follow the setup instructions.";return}
+    try{
+      if(!auth){if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);auth=firebase.auth()}
+      message.textContent="Please wait...";
+      if(create)await auth.createUserWithEmailAndPassword($("email").value.trim(),$("password").value);
+      else await auth.signInWithEmailAndPassword($("email").value.trim(),$("password").value);
+      closeModal();toast("Firebase login successful!");
+    }catch(e){message.textContent=e.code==="auth/invalid-credential"?"Email/password incorrect.":e.code==="auth/email-already-in-use"?"Account already exists. Try signing in.":e.code==="auth/weak-password"?"Use a stronger password.":e.message||"Login failed."}
+  };
+  $("authForm").onsubmit=e=>{e.preventDefault();doAuth(false)};
+  $("createAccount").onclick=()=>doAuth(true);
+}
+$("loginBtn").onclick=showLogin;
+if(window.firebase){
+  try{
+    if(firebaseConfig.apiKey!=="PASTE_YOUR_API_KEY"&&firebaseConfig.projectId!=="PASTE_YOUR_PROJECT_ID"&&firebaseConfig.appId!=="PASTE_YOUR_APP_ID"){
+      if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+      auth=firebase.auth();
+      auth.onAuthStateChanged(u=>{
+        user=u;
+        $("authStatus").textContent=u?("Signed in: "+u.email):"Guest workspace";
+        $("loginBtn").textContent=u?"↪ Sign out":"🔐 Login";
+        $("loginBtn").onclick=u?async()=>{try{await auth.signOut();toast("Signed out.")}catch(e){toast("Sign out failed.")}}:showLogin;
+      });
+    }
+  }catch(e){console.warn("Firebase initialization issue",e)}
+}
+$("greetingName").textContent=localStorage.getItem("avo_name")||"Explorer";
+render();
+
+/* Register the service worker for offline app-shell caching. */
+if("serviceWorker" in navigator && location.protocol!=="file:"){
+  window.addEventListener("load",()=>navigator.serviceWorker.register("./sw.js").catch(e=>console.warn("SW registration failed",e)));
+}
+</script>
+</body>
+</html>

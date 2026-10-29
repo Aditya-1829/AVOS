@@ -1,0 +1,21 @@
+
+{
+  "id": "./",
+  "name": "Aditya Verse Campus OS",
+  "short_name": "Campus OS",
+  "description": "Your personal student workspace",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#090d1b",
+  "theme_color": "#090d1b",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
